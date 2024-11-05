@@ -1,6 +1,6 @@
-# powerjob-work-python
+## powerjob-work-python
 
-
+```shell
 sudo apt-get update
 sudo apt-get install \
     apt-transport-https \
@@ -8,6 +8,7 @@ sudo apt-get install \
     curl \
     gnupg \
     lsb-release
+
 
 curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
@@ -24,8 +25,10 @@ sudo systemctl enable docker
 
 sudo systemctl start docker
 
+```
 
-# 根据dockerfile 生成 image
+## 根据dockerfile 生成 image
+```shell
  sudo docker build -t powerjob_work_python:v1 .
 
 #查看image
@@ -42,15 +45,24 @@ sudo docker run -d --network=host -v /home/yinyunlong/person/python_workspace/po
 #进入 container
 sudo docker run -i -t powerjob_work_python:v1 /bin/bash
 
+
+
+```
+
+
+##生成 requirements.txt
+```shell
+
 #安装 requirements.txt 依赖
 pip install -r requirements.txt
 
-#生成 requirements.txt
+
+
 pip freeze > requirements.txt
+```
 
-#生成
+##生成 可执行文件
+
+```shell
 pyinstaller -F src/powerjob_worker.py
-
-
-#
-./home/yinyunlong/person/python_workspace/powerjob-work-python/dist/powerjob_worker
+```
