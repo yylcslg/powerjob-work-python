@@ -6,6 +6,7 @@ import socket
 import urllib
 import pybyte as pybyte
 
+from src.utils.Properties import pro
 from src.utils.date_utils import DateUtils
 
 
@@ -217,15 +218,15 @@ def project_path():
 
 
 def resource_path():
-    return project_path() + 'resource/'
+    return pro.get('resource_path')
 
 def task_file_path():
-    return project_path() + 'src/task/'
+    return pro.get('task_path')
 
 
 
 def read_proxy_ip():
-    file_path_prefix = project_path() + 'resource/config/'
+    file_path_prefix = resource_path() + 'config/'
     file_name = 'proxy_ip.csv'
     proxy_ips = []
 

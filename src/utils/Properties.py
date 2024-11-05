@@ -1,8 +1,5 @@
 import os
 
-from src.utils import tools_utils
-
-
 class Properties:
 
     def __init__(self, file_name):
@@ -22,10 +19,10 @@ class Properties:
             pro_file.close()
         return properties
 
-pro = Properties(tools_utils.project_path()+'resource/config/param.properties').getProperties()
+pro = Properties('/home/config/param.properties').getProperties()
 
 if __name__ == '__main__':
 
-    pro = Properties(tools_utils.project_path()+'resource/config/param.properties')
+    pro = Properties('/home/config/param.properties')
 
     print(pro.getProperties())
