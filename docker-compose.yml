@@ -1,0 +1,43 @@
+services:
+  server_web:
+    image: powerjob-server:v1
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    container_name: powerjob_server
+    network_mode: "host"
+    #restart: always
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:7700/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    environment:
+      PARAMS : ""
+      JVMOPTIONS : "Xmx512m"
+    ports:
+      - 7700:7700
+      - 10086:10086
+      - 5001:5005
+      - 10001:10000
+    volumes:
+      - "/home/yinyunlong/powerjob/server:/root/powerjob/server"
+    entrypoint: ["sh","-c","java $JVMOPTIONS -jar /powerjob-server.jar $PARAMS"]
+
+  worker_web:
+    image: powerjob_work_python:v1
+    #build: .
+    depends_on:
+      server_web:
+        condition: service_healthy
+    container_name: powerjob_work
+    network_mode: "host"
+    #restart: always
+    ports:
+      - 27000:27000
+    volumes:
+      - "/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/"
+      - "/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/"
+    entrypoint: [ "python", "/home/powerjob-work-python/powerjob_worker.py" ]

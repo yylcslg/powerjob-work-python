@@ -31,6 +31,10 @@ sudo systemctl start docker
 
 
 ```shell
+#删除 镜像
+ sudo docker rmi -f powerjob_work_python:v1
+
+# build 新镜像
  sudo docker build -t powerjob_work_python:v1 .
 
 #查看image
@@ -59,6 +63,8 @@ sudo docker run -i -t powerjob_work_python:v1 /bin/bash
 
 sudo docker stop  [container_id]
 
+sudo docker inspect [container_id]
+
 ```
 
 
@@ -77,3 +83,41 @@ pip freeze > requirements.txt
 ```shell
 pyinstaller -F powerjob_worker.py
 ```
+
+## docker compose 使用
+
+```shell
+#启动 compose 容器
+sudo docker compose  up 
+
+#后台 启动 compose 容器 -d
+sudo docker compose  up -d
+
+#停止 compose 容器
+sudo docker compose down
+
+#查看所有启动容器
+sudo docker compose ps
+
+
+sudo docker-compose -f docker-compose.yml up
+
+
+sudo docker-compose -f /home/yinyunlong/person/python_workspace/powerjob-work-python/docker-compose.yml up -d
+
+sudo docker-compose -f /home/yinyunlong/person/python_workspace/powerjob-work-python/docker-compose.yml down
+
+```
+
+## 清理所有停止运行的容器
+
+```shell
+
+sudo docker container prune
+
+sudo docker image prune
+
+sudo docker volume prune
+
+```
+
