@@ -9,7 +9,7 @@ WORKDIR ../
 
 
 COPY requirements.txt ./
-COPY worker.py ./
+COPY powerjob_worker.py ./
 
 #RUN pip install  -r requirements.txt
 #解决速度慢问题
