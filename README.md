@@ -37,18 +37,27 @@ sudo systemctl start docker
  sudo docker images
 
 #运行 image
- sudo docker run -it powerjob_work_python:v1
+ #sudo docker run -it powerjob_work_python:v1
 
 #查看运行中 容器
 sudo docker ps
 
-sudo docker run -d --network=host \
-  -v /home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/ \
-  -v /home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/ \ 
-  -it powerjob_work_python:v1
+sudo docker run \
+    -d --network=host \
+    -v /home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/ \
+    -v /home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/ \
+    -it powerjob_work_python:v1
+
+
+sudo docker run -d --network=host -v /home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/ -v /home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/ -it powerjob_work_python:v1 
+
 
 #进入 container
 sudo docker run -i -t powerjob_work_python:v1 /bin/bash
+
+#停止容器
+
+sudo docker stop  [container_id]
 
 ```
 
