@@ -1,7 +1,7 @@
 
 from src.task_core.web3_wrap import Web3Wrap
 from src.utils.block_chain import Block_chain
-from src.utils.log import log
+from src.utils.log import worker_log
 
 try:
     param_map = param_dict
@@ -29,7 +29,7 @@ def checkin(w, address):
     rsp = w.session.request(method='get', url=url)
 
     log_msg = f"[{batch_name}][{num}][checkin][{instanceId}]  {address} : status code: {rsp.status_code} content: {rsp.json()}"
-    log.info(log_msg, instanceId)
+    worker_log.msg_info(log_msg, instanceId)
 
     return rsp.json()
 

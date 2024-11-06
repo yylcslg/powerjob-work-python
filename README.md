@@ -42,7 +42,10 @@ sudo systemctl start docker
 #查看运行中 容器
 sudo docker ps
 
-sudo docker run -d --network=host -v /home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/ -v /home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/ -it powerjob_work_python:v1
+sudo docker run -d --network=host \
+  -v /home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/ \
+  -v /home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/ \ 
+  -it powerjob_work_python:v1
 
 #进入 container
 sudo docker run -i -t powerjob_work_python:v1 /bin/bash
@@ -63,5 +66,5 @@ pip freeze > requirements.txt
 
 ## 生成 可执行文件
 ```shell
-pyinstaller -F src/powerjob_worker.py
+pyinstaller -F powerjob_worker.py
 ```

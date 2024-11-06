@@ -3,12 +3,16 @@ import json
 from flask import request
 
 from src.cache.cache import instanceCache, taskCache
-from src.utils.log import log
+from src.utils.log import worker_log
 from src.web import worker
 from src.web.bean.instance_bean import InstanceBean
 from src.web.bean.job_req import JobReq
 from src.web.taskTrackerActor import task_tracker
 
+
+@worker.route('/')
+def test():
+    return 'Hello,worker!'
 
 @worker.route('/runJob',methods=['POST'])
 def runJob():
@@ -33,7 +37,7 @@ def runJob():
 def stopInstance():
     data = json.loads(request.stream.read().decode())
     instanceId = data['instanceId']
-    log.info(f'worker stopInstance:, {instanceId}')
+    worker_log.msg_info(f'worker stopInstance:, {instanceId}')
     if instanceId in instanceCache:
         bean : InstanceBean = instanceCache[instanceId]
         bean.result = 'stop'

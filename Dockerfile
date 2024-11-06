@@ -4,6 +4,8 @@ WORKDIR /home
 WORKDIR config
 WORKDIR ../powerjob-work-python/src
 WORKDIR ../
+WORKDIR log
+WORKDIR ../
 
 
 COPY requirements.txt ./
@@ -20,4 +22,4 @@ COPY resource/config/param.properties /home/config
 
 WORKDIR /home/powerjob-work-python/
 
-CMD [ "python", "worker.py" ]
+CMD [ "python", "powerjob_worker.py" ]

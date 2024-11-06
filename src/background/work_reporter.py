@@ -2,6 +2,7 @@ import json
 from time import sleep
 
 import requests
+from flask import Flask
 
 from src.cache.cache import instanceCache, taskCache
 from src.task_core.instance_log_queue import logQueue
@@ -75,7 +76,7 @@ class WorkReporter:
 
 
 
-    def report_log(self):
+    def reportLog(self):
         url = HTTP_PREFIX + self.server_address + '/server/reportLog'
         workerAddress = tools_utils.local_host_ip() + ":" + pro.get("powerjob.worker.port")
         log = WorkLog()

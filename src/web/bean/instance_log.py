@@ -1,8 +1,5 @@
 import json
 
-from src.task_core.instance_log_queue import logQueue
-
-
 from src.utils.date_utils import DateUtils
 
 
