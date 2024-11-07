@@ -65,6 +65,9 @@ sudo docker stop  [container_id]
 
 sudo docker inspect [container_id]
 
+# 停止 容器的 always 设置
+sudo docker update --restart=no [container_id]
+
 ```
 
 

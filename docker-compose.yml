@@ -1,4 +1,26 @@
 services:
+  mysql:
+    image : mysql:5.7
+    container_name: mysql_db
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - "/home/yinyunlong/person/program/mysql/conf:/etc/mysql/conf.d"
+      - "/home/yinyunlong/person/program/mysql/logs:/logs"
+      - "/home/yinyunlong/person/program/mysql/data:/var/lib/mysql"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_DATABASE=powerjob-daily"
+      - "TZ=Asia/Shanghai"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "--password=root" ]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+
   server_web:
     image: powerjob-server:v1
     deploy:
@@ -6,8 +28,11 @@ services:
         limits:
           memory: 1024M
     container_name: powerjob_server
+    depends_on:
+      mysql:
+        condition: service_healthy
     network_mode: "host"
-    #restart: always
+    restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:7700/" ]
       interval: 30s
@@ -28,13 +53,12 @@ services:
 
   worker_web:
     image: powerjob_work_python:v1
-    #build: .
     depends_on:
       server_web:
         condition: service_healthy
     container_name: powerjob_work
     network_mode: "host"
-    #restart: always
+    restart: always
     ports:
       - 27000:27000
     volumes:

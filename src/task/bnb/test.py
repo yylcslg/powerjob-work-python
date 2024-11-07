@@ -1,7 +1,5 @@
 import requests
 
-
-from src.utils import tools_utils
 from src.utils.date_utils import DateUtils
 
 
@@ -13,8 +11,7 @@ def testHost():
     print(rsp.text)
 
 def testRunJob():
-    host = tools.local_host_ip()
-    print(host)
+
     url = 'http://127.0.0.1:27777/server/workerHeartbeat'
     print('url:'+ url)
     ts = DateUtils.get_timestamp()

@@ -36,9 +36,9 @@ def run_test(dir_name, file_name):
 
 if __name__ == "__main__":
 
-    run_mailzero('bnb', 'mailzero.py')
+    #run_mailzero('bnb', 'mailzero.py')
 
- #   run_test('bnb', 'test.py')
+    run_test('bnb', 'btc_token.py')
 
 
     print("finish...................")

@@ -1,4 +1,5 @@
 import logging
+import os
 from logging import handlers
 
 from src.task_core.instance_log_queue import logQueue
@@ -12,7 +13,10 @@ class Web3log:
     def __init__(self, log_name='powerjob-work-python', log_level = "INFO", max_mb = 10, format_str = default_format):
         log = logging.getLogger(log_name)
         log.setLevel(log_level)
-        fh = handlers.RotatingFileHandler("./log/" + log_name + ".log", maxBytes=max_mb * 1024 * 1024, backupCount=100000)
+
+        dir_path = os.path.abspath(os.path.dirname(__file__)) + '/../../log/'
+
+        fh = handlers.RotatingFileHandler(dir_path + log_name + ".log", maxBytes=max_mb * 1024 * 1024, backupCount=100000)
         fh.setLevel(log_level)
         log.addHandler(fh)
         fh.setFormatter(logging.Formatter(format_str))
