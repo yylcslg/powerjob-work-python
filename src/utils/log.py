@@ -3,7 +3,7 @@ import os
 from logging import handlers
 
 from src.task_core.instance_log_queue import logQueue
-from src.web.bean.instance_log import InstanceLogContent
+
 
 
 class Web3log:
@@ -25,6 +25,7 @@ class Web3log:
 
 
     def msg_info(self, msg, id=0, print_flag:bool = True, *args, **kwargs):
+        from src.web.bean.instance_log import InstanceLogContent
         if print_flag:
             print('[info]', msg, *args)
         self.log.info(msg, *args, **kwargs)

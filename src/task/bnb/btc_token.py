@@ -19,7 +19,6 @@ else:
 
 
 
-
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'
 
 
@@ -39,7 +38,7 @@ def btc_faucet(w):
 
 
 def claim_btc_test(w):
-    address = 'tb1pu5y4t5lsuadry3gk559h63xzr50dy0jwafp3r3j325h57f3tcx0sjrp3yf'
+    address = 'tb1pkazmlpyfaeuu78chfyn8t5073healy2vgh9dyapev9ruc9khumxqcdv2sq'
     url = 'https://api.thefaucet.org/v3/claim_basic_not_login'
 
     payload = {

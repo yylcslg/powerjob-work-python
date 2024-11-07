@@ -1,9 +1,7 @@
 import random
 from concurrent.futures import ThreadPoolExecutor
 
-from src.utils import tools_utils
-from src.utils.tools_utils import resource_path, msg_decode, task_file_path, msg_encode
-from src.utils.wallet_account import Wallet
+from src.utils.tools_utils import msg_decode, task_file_path, msg_encode
 from src.web.bean.instance_bean import InstanceBean, Instance_status
 
 
@@ -15,19 +13,6 @@ class TaskCoreInstance:
         with open(task_file_path() + dir_name + '/' + file_name) as f:
             template_txt = msg_encode(f.read())
         return template_txt
-
-    @staticmethod
-    def file_accounts(rs_dir,account_exp):
-        dir_path=''
-        dir_path = resource_path() + rs_dir+'/'
-        if account_exp.strip().isspace():
-            return []
-        t = tools_utils.parse_exp(account_exp.strip())
-        if t[2] == 0:
-            accounts = Wallet.read_wallet_file(file_name=t[0]+'.csv', file_path_prefix=dir_path)[t[1]: ]
-        else:
-            accounts = Wallet.read_wallet_file(file_name=t[0] + '.csv', file_path_prefix=dir_path)[t[1]:t[2]]
-        return (accounts, t)
 
 
     def instance_startup(template_txt,accounts_1_lst,accounts_2, proxy_ip_list, parallelism_num ,instance_bean:InstanceBean, param_dict={}):

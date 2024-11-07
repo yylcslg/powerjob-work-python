@@ -1,11 +1,8 @@
 import random
 from concurrent.futures import ThreadPoolExecutor
 
-from src.service.proxy_service import Proxy_type
-from src.utils import tools_utils
-from src.utils.tools_utils import resource_path, msg_decode
-from src.utils.wallet_account import Wallet
-from src.web.bean.instance_bean import InstanceBean
+from src.utils.file_read import file_accounts
+from src.utils.tools_utils import msg_decode, read_proxy_ip
 
 
 class TaskCoreLocal:
@@ -13,16 +10,16 @@ class TaskCoreLocal:
     @staticmethod
     def local_run(template_txt,rs_dir,accounts_exp_1,accounts_exp_2='', parallelism_num =1):
         try:
-            proxy_ip_list = ['127.0.0.1:8889']
+            proxy_ip_list = read_proxy_ip()
             account_2=''
             if accounts_exp_2 != '':
-                account_2 = TaskCoreLocal.file_accounts(accounts_exp_2)[0]
+                account_2 = file_accounts(rs_dir,accounts_exp_2)[0]
 
             template_accounts_exp = accounts_exp_1.split(';')
 
             for account_exp in template_accounts_exp:
                 param_dict = {}
-                t = TaskCoreLocal.file_accounts(rs_dir, account_exp)
+                t = file_accounts(rs_dir, account_exp)
 
                 account_1_lst = t[0]
                 account_tuple = t[1]
@@ -37,17 +34,6 @@ class TaskCoreLocal:
         except Exception as e:
             print('local_run error...', e)
 
-    @staticmethod
-    def file_accounts(rs_dir,account_exp):
-        dir_path = resource_path() + rs_dir+'/'
-        if account_exp.strip().isspace():
-            return []
-        t = tools_utils.parse_exp(account_exp.strip())
-        if t[2] == 0:
-            accounts = Wallet.read_wallet_file(file_name=t[0]+'.csv', file_path_prefix=dir_path)[t[1]: ]
-        else:
-            accounts = Wallet.read_wallet_file(file_name=t[0] + '.csv', file_path_prefix=dir_path)[t[1]:t[2]]
-        return (accounts, t)
 
 
     def local_single(template_txt,accounts_1_lst,accounts_2, proxy_ip_list, parallelism_num ,param_dict={}):
@@ -90,7 +76,6 @@ class TaskCoreLocal:
             param_dict['exe_num'] = str(exe_num)
             param_dict['instance_id'] = -1
             param_dict['instance_bean'] = ''
-            param_dict['wallet_address'] = account_1.address
 
             exec_param = {'param_dict': param_dict}
 

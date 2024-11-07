@@ -34,9 +34,21 @@ def run_test(dir_name, file_name):
     TaskCoreLocal.local_run(template_txt, dir_path,accounts_exp_1= accounts_exp_1, accounts_exp_2 = accounts_exp_2,
                             parallelism_num = parallelism_num)
 
+
+def run_test_email(dir_name, file_name):
+    template_txt = read_local_file(dir_name, file_name)
+    dir_path ='email'
+    accounts_exp_1 = 'email[:]'
+    accounts_exp_2 = ''
+    parallelism_num = 1
+    TaskCoreLocal.local_run(template_txt, dir_path,accounts_exp_1= accounts_exp_1, accounts_exp_2 = accounts_exp_2,
+                            parallelism_num = parallelism_num)
+
+
 if __name__ == "__main__":
 
     #run_mailzero('bnb', 'mailzero.py')
+    #run_test_email('bnb', 'email.py')
 
     run_test('bnb', 'btc_token.py')
 

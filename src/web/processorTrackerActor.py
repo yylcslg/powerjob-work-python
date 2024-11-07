@@ -1,6 +1,7 @@
 from src.cache.cache import taskCache
 from src.task_core.task_core_instance import TaskCoreInstance
 from src.utils.date_utils import DateUtils
+from src.utils.file_read import file_accounts
 from src.utils.tools_utils import read_proxy_ip
 from src.web import processorTracker
 from src.web.bean.instance_bean import InstanceBean, Instance_status
@@ -22,9 +23,10 @@ def task_process(bean:InstanceBean):
         jobParam = taskBean.jobParams.split('@')
         rs_dir = jobParam[0]
         accounts_exp_1 = jobParam[1]
+
         accounts_exp_2 = ''
-        if(len(processorInfo)>2):
-            accounts_exp_2= processorInfo[2]
+        if(len(jobParam) > 2):
+            accounts_exp_2 = jobParam[2]
 
         parallelism_num = taskBean.threadConcurrency
         bean.instanceStatus = Instance_status.RUNING.value
@@ -34,7 +36,7 @@ def task_process(bean:InstanceBean):
         proxy_ip_list = read_proxy_ip()
         account_2 = ''
         if accounts_exp_2 != '':
-            account_2 = TaskCoreInstance.file_accounts(accounts_exp_2)[0]
+            account_2 = file_accounts(rs_dir,accounts_exp_2)[0]
 
         template_accounts_exp = accounts_exp_1.split(';')
 
@@ -42,7 +44,7 @@ def task_process(bean:InstanceBean):
         for account_exp in template_accounts_exp:
             num = num + 1
 
-            t = TaskCoreInstance.file_accounts(rs_dir, account_exp)
+            t = file_accounts(rs_dir, account_exp)
             account_1_lst = t[0]
             account_tuple = t[1]
 

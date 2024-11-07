@@ -9,7 +9,6 @@ import pybyte as pybyte
 from src.utils.Properties import pro
 from src.utils.date_utils import DateUtils
 
-
 MD5 = 'md5'
 UTF_8 = 'utf-8'
 BASE_64 = 'base64'
@@ -243,5 +242,7 @@ def local_host_ip():
     # 获取本机ip
     ip = socket.gethostbyname(hostname)
     return ip
+
+
 
 
