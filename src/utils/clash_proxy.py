@@ -1,4 +1,5 @@
 import json
+import random
 import urllib
 
 import requests
@@ -17,7 +18,6 @@ class ClashProxy:
 
 
     def get_all_node(self):
-        print('clash_url:  ', self.clash_url)
         url = 'http://' + self.clash_url +'/proxies'
 
         rsp = requests.request('get', url = url, headers = self.headers)
@@ -36,6 +36,19 @@ class ClashProxy:
                     or '官网' in node):
                 continue
             nodeNames.append(node)
+
+
+        node_len = len(nodeNames)
+        if(node_len == 0):
+            return nodeNames
+
+        ##特殊处理，第一个节点放最后，最后的节点放最前， 防止clash 节点调整后不能调整回来
+        temp = nodeNames[0]
+
+        nodeNames[0] = nodeNames[node_len -1]
+        nodeNames[node_len - 1] = temp
+
+
         return nodeNames
 
 
@@ -45,7 +58,6 @@ class ClashProxy:
             encode_Str = urllib.request.quote(node, safe='/:?=&', encoding='utf-8')
             url = 'http://' + self.clash_url + '/proxies/' + encode_Str + '/delay?timeout=5000&url=http%3A%2F%2Fwww.gstatic.com%2Fgenerate_204'
             rsp = requests.request('get', url=url, headers=self.headers)
-            print('node:', node, 'rsp:', rsp, rsp.text)
             return rsp.json()['delay']
         except Exception:
             return -1
@@ -59,14 +71,23 @@ class ClashProxy:
             payload = {
                 "name": node
             }
-
-            rsp = requests.request('put', url=url, headers=self.headers, data=json.dumps(payload))
-            print('rsp:', rsp.status_code, rsp.text)
+            print(node)
+            requests.request('put', url=url, headers=self.headers, data=json.dumps(payload))
             return 0
         except Exception:
             return -1
 
 
+    def random_change_node(self):
+        try:
+            nodeNames = self.get_all_node()
+            num = random.randint(0, len(nodeNames))
+            self.change_node(nodeNames[num])
+        except Exception:
+            return -1
+
 if __name__ == '__main__':
     clash = ClashProxy()
-    clash.get_all_node()
+    nodeNames = clash.get_all_node()
+    clash.random_change_node()
+

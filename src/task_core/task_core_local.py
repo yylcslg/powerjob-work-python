@@ -73,7 +73,7 @@ class TaskCoreLocal:
             param_dict['account_1'] = account_1
             param_dict['proxy_ip'] = proxy_ip
             param_dict['account_2'] = account_2
-            param_dict['exe_num'] = str(exe_num)
+            param_dict['exe_num'] = exe_num
             param_dict['instance_id'] = -1
             param_dict['instance_bean'] = ''
 

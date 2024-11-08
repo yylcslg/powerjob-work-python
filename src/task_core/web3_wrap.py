@@ -25,7 +25,6 @@ class Web3Wrap:
             self.w3 = Web3(Web3.HTTPProvider(block_chain.url))
         else:
             self.w3 = Web3(Web3.HTTPProvider(block_chain.url, session=self.session))
-
         self.timeout = timeout
         self.chainid = self.w3.eth.chain_id
         self.gas_flag = gas_flag
@@ -47,6 +46,19 @@ class Web3Wrap:
         str_msg = block_chain.url + proxy_ip
         key = hashlib.md5(str_msg.encode(encoding='utf-8')).hexdigest()
         if key in  Web3Wrap.instance_dic:
+            pass
+        else:
+            with threading.RLock():
+                if key not in Web3Wrap.instance_dic:
+                    Web3Wrap.instance_dic[key] = Web3Wrap(block_chain, proxy_ip, timeout, gas_flag)
+
+        return Web3Wrap.instance_dic[key]
+
+    @staticmethod
+    def get_instance(block_chain=Block_chain.LINEA_TEST, proxy_ip='127.0.0.1:8889', timeout=120, gas_flag=True):
+        str_msg = block_chain.url + proxy_ip
+        key = hashlib.md5(str_msg.encode(encoding='utf-8')).hexdigest()
+        if key in Web3Wrap.instance_dic:
             pass
         else:
             with threading.RLock():

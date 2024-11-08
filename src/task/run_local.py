@@ -25,10 +25,10 @@ def run_mailzero(dir_name, file_name):
 
 
 
-def run_test(dir_name, file_name):
+def run_btc_fault(dir_name, file_name):
     template_txt = read_local_file(dir_name, file_name)
-    dir_path ='evm_wallet'
-    accounts_exp_1 = 'test[:1]'
+    dir_path ='btc_wallet'
+    accounts_exp_1 = 'btc_test_1[:46]'
     accounts_exp_2 = ''
     parallelism_num = 1
     TaskCoreLocal.local_run(template_txt, dir_path,accounts_exp_1= accounts_exp_1, accounts_exp_2 = accounts_exp_2,
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     #run_mailzero('bnb', 'mailzero.py')
     #run_test_email('bnb', 'email.py')
 
-    run_test('bnb', 'btc_token.py')
+    run_btc_fault('bnb', 'btc_token.py')
 
 
     print("finish...................")
