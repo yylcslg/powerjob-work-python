@@ -1,8 +1,9 @@
 import json
 
 from src.task_core.web3_wrap import Web3Wrap
+from src.utils.Properties import pro
 from src.utils.block_chain import Block_chain
-from src.utils.clash_proxy import ClashProxy
+
 from src.utils.log import worker_log
 
 
@@ -39,8 +40,15 @@ def btc_faucet(w):
     pass
 
 
-clash = ClashProxy()
+
 def claim_btc_test(address):
+    worker_log.msg_info(f"[{batch_name}][{exe_num}][{instanceId}]  {address} : test size..............",
+                        instanceId)
+    clash_url = pro.get('external_controller')
+    secret = pro.get('secret')
+
+    from src.utils.clash_proxy import ClashProxy
+    clash = ClashProxy(clash_url, secret)
     nodes = clash.get_all_node()
     if(exe_num > len(nodes)):
         worker_log.msg_info(f"[{batch_name}][{exe_num}][{instanceId}]  {address} : exe_num  > node size..............", instanceId)

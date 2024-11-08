@@ -4,14 +4,11 @@ import urllib
 
 import requests
 
-from src.utils.Properties import pro
-
-
 class ClashProxy:
 
-    def __init__(self):
-        self.secret = pro.get('secret')
-        self.clash_url = pro.get('external_controller')
+    def __init__(self, url, secret):
+        self.clash_url = url
+        self.secret = secret
         self.headers = {
             'Authorization': 'Bearer ' + self.secret,
         }
@@ -86,7 +83,9 @@ class ClashProxy:
             return -1
 
 if __name__ == '__main__':
-    clash = ClashProxy()
+    clash_url = '127.0.0.1:34989'
+    secret = '423dc4ee-f47c-444f-a345-425e6c6482eb'
+    clash = ClashProxy(clash_url, secret)
     nodeNames = clash.get_all_node()
     print(len(nodeNames))
 

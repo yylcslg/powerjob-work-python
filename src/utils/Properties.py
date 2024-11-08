@@ -19,7 +19,7 @@ class Properties:
             pro_file.close()
         return properties
 
-pro = Properties('/home/config/param.properties').getProperties()
+pro = Properties('/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/config/param.properties').getProperties()
 
 if __name__ == '__main__':
 
