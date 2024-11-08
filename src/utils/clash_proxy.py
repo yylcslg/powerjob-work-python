@@ -71,7 +71,6 @@ class ClashProxy:
             payload = {
                 "name": node
             }
-            print(node)
             requests.request('put', url=url, headers=self.headers, data=json.dumps(payload))
             return 0
         except Exception:
@@ -81,7 +80,7 @@ class ClashProxy:
     def random_change_node(self):
         try:
             nodeNames = self.get_all_node()
-            num = random.randint(0, len(nodeNames))
+            num = random.randint(0, len(nodeNames)-1)
             self.change_node(nodeNames[num])
         except Exception:
             return -1
@@ -89,5 +88,6 @@ class ClashProxy:
 if __name__ == '__main__':
     clash = ClashProxy()
     nodeNames = clash.get_all_node()
-    clash.random_change_node()
+    print(len(nodeNames))
+
 
