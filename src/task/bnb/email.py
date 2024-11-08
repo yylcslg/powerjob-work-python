@@ -21,7 +21,9 @@ else:
 
 def pring_msg(w, a1):
     print(a1)
+    log_msg = f"[{batch_name}][{num}][{instanceId}]  {a1} "
 
+    worker_log.msg_info(log_msg, instanceId)
 
 w = Web3Wrap.get_instance(block_chain=Block_chain.Sepolia, proxy_ip=proxy_ip_str, gas_flag=False)
 

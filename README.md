@@ -124,3 +124,6 @@ sudo docker volume prune
 
 ```
 
+## 配置文件路径
+
+/home/config/
