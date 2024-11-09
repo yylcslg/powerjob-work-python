@@ -42,14 +42,16 @@ def btc_faucet(w):
 
 
 def claim_btc_test(address):
-    worker_log.msg_info(f"[{batch_name}][{exe_num}][{instanceId}]  {address} : test size..............",
-                        instanceId)
+
     clash_url = pro.get('external_controller')
     secret = pro.get('secret')
+
+    worker_log.msg_info(f"[{batch_name}][{exe_num}][{instanceId}]  {address} : [{clash_url}].", instanceId)
 
     from src.utils.clash_proxy import ClashProxy
     clash = ClashProxy(clash_url, secret)
     nodes = clash.get_all_node()
+
     if(exe_num > len(nodes)):
         worker_log.msg_info(f"[{batch_name}][{exe_num}][{instanceId}]  {address} : exe_num  > node size..............", instanceId)
         return

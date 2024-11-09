@@ -18,7 +18,7 @@ RUN pip3 install  -r requirements.txt
 
 
 COPY src /home/powerjob-work-python/src
-COPY resource/config/param.properties /home/config
+#COPY resource/config/param.properties /home/config
 
 WORKDIR /home/powerjob-work-python/
 
