@@ -62,6 +62,7 @@ services:
     ports:
       - 27000:27000
     volumes:
+      - "/home/yinyunlong/.config/clash/:/home/yinyunlong/.config/clash/"
       - "/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/"
       - "/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/"
     entrypoint: [ "python", "/home/powerjob-work-python/powerjob_worker.py" ]

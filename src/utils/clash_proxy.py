@@ -1,17 +1,26 @@
 import json
 import random
 import urllib
+import yaml
+
 
 import requests
 
 class ClashProxy:
 
-    def __init__(self, url, secret):
-        self.clash_url = url
-        self.secret = secret
+    def __init__(self):
+        self.read_clash_yaml()
         self.headers = {
             'Authorization': 'Bearer ' + self.secret,
         }
+
+    def read_clash_yaml(self):
+        file_path = '/home/yinyunlong/.config/clash/config.yaml'
+        with open(file_path, encoding='utf-8') as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+            self.clash_url = data['external-controller']
+            self.secret = data['secret']
+
 
 
     def get_all_node(self):
@@ -82,11 +91,21 @@ class ClashProxy:
         except Exception:
             return -1
 
+
+    def get_config(self):
+        try:
+            url = 'http://' + self.clash_url + '/configs'
+
+            rsp = requests.request('get', url=url, headers=self.headers)
+            print('rsp:' , rsp.status_code, rsp.text)
+            return 0
+        except Exception as e:
+            print(e)
+            return -1
+
 if __name__ == '__main__':
-    clash_url = '127.0.0.1:34989'
-    secret = '423dc4ee-f47c-444f-a345-425e6c6482eb'
-    clash = ClashProxy(clash_url, secret)
+    clash = ClashProxy()
     nodeNames = clash.get_all_node()
-    print(len(nodeNames))
+    print(nodeNames)
 
 
