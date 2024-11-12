@@ -1,7 +1,6 @@
 import random
 import string
 
-import requests
 from fake_useragent import UserAgent
 from curl_cffi.requests import Session
 from loguru import logger
@@ -9,18 +8,38 @@ import time
 import urllib.parse
 import uuid
 
+from src.utils.tools_utils import read_proxy_ip
+
 ua = UserAgent()
 
+bearer_token = "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA"
 
-class TwitterWrap:
+twitter_auth_url = 'https://twitter.com/i/api/2/oauth2/authorize'
 
-    def __init__(self, auth_token):
+##
+#  会封号。。。。。。
+#
+class TwitterApi:
+
+    def __init__(self, auth_token, client_id):
+        print(auth_token)
         self.auth_token = auth_token
+        self.client_id = client_id,
+        self.Twitter = self.build_session()
+        self.X = self.build_session()
+        self.auth_code = None
+        self.auth_success = False  # 增加标志位记录授权是否成功
+        self.build_plume_x_params()
+        self.init_csrf_token()
+
+    def build_session(self):
+        proxy = read_proxy_ip()[0]
+        proxies = {"http": proxy, "https": proxy}
+
         defaulf_cookies = {
-            "auth_token": auth_token,
+            "auth_token": self.auth_token,
         }
 
-        bearer_token = "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA"
         defaulf_headers = {
             "authority": "x.com",
             "origin": "https://x.com",
@@ -31,77 +50,53 @@ class TwitterWrap:
             "x-client-uuid": str(uuid.uuid4())
 
         }
-        proxy='127.0.0.1:8889'
-        proxies = {"http": proxy, "https": proxy}
-        self.Twitter = Session(headers=defaulf_headers, proxies=proxies ,cookies=defaulf_cookies, timeout=120, impersonate='edge99')
-        self.X = Session(headers=defaulf_headers, proxies=proxies , cookies=defaulf_cookies, timeout=120, impersonate='edge99')
-        self.auth_code = None
-        self.auth_success = False  # 增加标志位记录授权是否成功
-        self.init_csrf_token()
+        session = Session(headers=defaulf_headers, proxies=proxies, cookies=defaulf_cookies, timeout=120, impersonate='edge99')
 
+        return session
 
     def init_csrf_token(self):
-        self.Twitter.get('https://twitter.com/i/api/2/oauth2/authorize')
+        self.Twitter.get(twitter_auth_url)
         self.Twitter.headers.update({"x-csrf-token": self.Twitter.cookies["ct0"]})
         self.X.get('https://x.com/i/api/graphql/Yka-W8dz7RaEuQNkroPkYw/UserByScreenName')
         self.X.headers.update({"x-csrf-token": self.X.cookies["ct0"]})
 
+    def build_plume_x_params(self):
+        rand_string = "".join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=32))
+        self.code_challenge = rand_string
+        self.redirect_uri = 'https://www.baidu.com/get/userById'
+        self.scope = 'tweet.read%20offline.access%20tweet.write%20tweet.moderate.write%20users.read%20follows.read%20follows.write'
 
 
-    def twitter_authorizeV1(self, authenticity_token, oauth_token):
-        # 如果已经授权成功，直接返回 True，不再进行授权
-        if self.auth_success:
-            logger.info(f'{self.auth_token} 已成功授权，跳过重新授权')
-            return True
 
-        try:
-            data = {
-                'authenticity_token': authenticity_token,
-                'redirect_after_login': f'https://api.x.com/oauth/authorize?oauth_token={oauth_token}',
-                'oauth_token': oauth_token,
-            }
-            response = self.Twitter.post('https://x.com/oauth/authorize', data=data)
-            if 'redirect_uri' in response.text:
-                self.auth_success = True  # 授权成功，设置标志位
-                return True
-            elif response.status_code == 429:
-                time.sleep(5)
-                return self.twitter_authorizeV1(authenticity_token, oauth_token)
-            logger.error(f'{self.auth_token} 推特授权失败')
-            return False
-        except Exception as e:
-            logger.error(f'{self.auth_token} 推特授权异常：{e}')
-            return False
+    def set_scope(self, scope_data):
+        self.scope = scope_data
 
 
-    def get_auth_codeV2(self, client_id, state, code_challenge, redirect_uri, scope, code_challenge_method='plain',
-                        response_type='code'):
+    def get_auth_code(self):
         # 如果已经授权成功，直接返回 True，不再进行授权
         if self.auth_success:
             logger.info(f'{self.auth_token} 已成功授权，跳过重新授权')
             return True
         try:
             params = {
-                'code_challenge': urllib.parse.unquote(code_challenge),
-                'code_challenge_method': urllib.parse.unquote(code_challenge_method),
-                'client_id': client_id,
-                'redirect_uri': urllib.parse.unquote(redirect_uri),
-                'response_type': urllib.parse.unquote(response_type),
-                'scope': urllib.parse.unquote(scope),
-                'state': state
+                'code_challenge': urllib.parse.unquote(self.code_challenge),
+                'code_challenge_method': urllib.parse.unquote('plain'),
+                'client_id': self.client_id,
+                'redirect_uri': urllib.parse.unquote(self.redirect_uri),
+                'response_type': urllib.parse.unquote('code'),
+                'scope': urllib.parse.unquote(self.scope),
+                'state': 'profile'
             }
 
-            response = self.Twitter.get('https://twitter.com/i/api/2/oauth2/authorize', params=params)
+            response = self.Twitter.get(twitter_auth_url, params=params)
 
             if "code" in response.json() and response.json()["code"] == 353:
                 self.Twitter.headers.update({"x-csrf-token": response.cookies["ct0"]})
                 logger.warning(f'{response.json()}')
-                return self.get_auth_codeV2(client_id, state, code_challenge, redirect_uri, scope,
-                                            code_challenge_method, response_type)
+                return self.get_auth_code()
             elif response.status_code == 429:
                 time.sleep(5)
-                return self.get_auth_codeV2(client_id, state, code_challenge, redirect_uri, scope,
-                                            code_challenge_method, response_type)
+                return self.get_auth_code()
             elif 'auth_code' in response.json():
                 self.auth_code = response.json()['auth_code']
                 return True
@@ -111,29 +106,26 @@ class TwitterWrap:
             logger.error(e)
             return False
 
-    def twitter_authorizeV2(self, client_id, state, code_challenge, redirect_uri, scope,
-                            code_challenge_method='plain', response_type='code'):
+    def twitter_authorize(self):
         # 如果已经授权成功，直接返回 True，不再进行授权
         if self.auth_success:
             logger.info(f'{self.auth_token} 已成功授权，跳过重新授权')
             return True
 
         try:
-            if not self.get_auth_codeV2(client_id, state, code_challenge, redirect_uri, scope,
-                                        code_challenge_method, response_type):
+            if not self.get_auth_code():
                 return False
             data = {
                 'approval': 'true',
                 'code': self.auth_code,
             }
-            response = self.Twitter.post('https://twitter.com/i/api/2/oauth2/authorize', data=data)
+            response = self.Twitter.post(twitter_auth_url, data=data)
             if 'redirect_uri' in response.text:
                 self.auth_success = True  # 授权成功，设置标志位
                 return True
             elif response.status_code == 429:
                 time.sleep(5)
-                return self.twitter_authorizeV2(client_id, state, code_challenge, redirect_uri, scope,
-                                                code_challenge_method, response_type)
+                return self.twitter_authorize()
             logger.error(f'{self.auth_token} 推特授权失败')
             return False
         except Exception as e:
@@ -158,18 +150,17 @@ class TwitterWrap:
         assert resp.get('errors') is None or 'already' in str(resp.get('errors')), str(resp.get('errors'))
         return resp
 
-    def get_rest_id(self, screen_name):
+    def get_rest_id(self, screen_name, query_id='Yka-W8dz7RaEuQNkroPkYw'):
         params = {
             'variables': '{"screen_name":"%s","withSafetyModeUserFields":true}' % (screen_name),
             'features': '{"hidden_profile_subscriptions_enabled":true,"rweb_tipjar_consumption_enabled":true,"responsive_web_graphql_exclude_directive_enabled":true,"verified_phone_label_enabled":false,"subscriptions_verification_info_is_identity_verified_enabled":true,"subscriptions_verification_info_verified_since_enabled":true,"highlights_tweets_tab_ui_enabled":true,"responsive_web_twitter_article_notes_tab_enabled":true,"subscriptions_feature_can_gift_premium":true,"creator_subscriptions_tweet_preview_api_enabled":true,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"responsive_web_graphql_timeline_navigation_enabled":true}',
             'fieldToggles': '{"withAuxiliaryUserLabels":false}',
         }
-        response = self.X_http('https://x.com/i/api/graphql/Yka-W8dz7RaEuQNkroPkYw/UserByScreenName', type='GET',
-                               data=params)
+        response = self.X_http(f'https://x.com/i/api/graphql/{query_id}/UserByScreenName', type='GET',data=params)
 
         return response.get('data', {}).get('user', {}).get('result', {}).get('rest_id')
 
-    # 关注
+    # # 有问题  关注
     def create(self, screen_name):
         user_id = self.get_rest_id(screen_name)
         print('user_id:', user_id)
@@ -191,7 +182,7 @@ class TwitterWrap:
         response = self.X_http('https://x.com/i/api/1.1/friendships/create.json', data=data)
         return response
 
-    # 取消关注
+    ## 有问题 取消关注
     def destroy(self, screen_name):
         user_id = self.get_rest_id(screen_name)
         print(user_id)
@@ -215,39 +206,42 @@ class TwitterWrap:
 
 
     # 点赞
-    def like(self, tweet_id):
+    def like(self, tweet_id, query_id= 'lI07N6Otwv1PhnEgXILM7A'):
         json_data = {
             'variables': {
                 'tweet_id': tweet_id,
             },
-            'queryId': 'lI07N6Otwv1PhnEgXILM7A',
+            'queryId': query_id,
         }
-        response = self.X_http('https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet', data=json_data)
+        response = self.X_http(f'https://x.com/i/api/graphql/{query_id}/FavoriteTweet', data=json_data)
         return response
 
     # 取消点赞
-    def cancel_like(self, tweet_id):
+    def cancel_like(self, tweet_id, query_id='ZYKSe-w7KEslx3JhSIk5LA'):
         json_data = {
             'variables': {
                 'tweet_id': tweet_id,
             },
-            'queryId': 'ZYKSe-w7KEslx3JhSIk5LA',
+            'queryId': query_id,
         }
-        response = self.X_http('https://x.com/i/api/graphql/ZYKSe-w7KEslx3JhSIk5LA/UnfavoriteTweet', data=json_data)
+        response = self.X_http(f'https://x.com/i/api/graphql/{query_id}/UnfavoriteTweet', data=json_data)
         return response
 
-    def retweet(self, tweet_id):
+
+    # 有问题
+    def retweet(self, tweet_id, query_id='iQtK4dl5hBmXewYZuEOKVw'):
         json_data = {
             'variables': {
                 'tweet_id': tweet_id,
                 'dark_request': False,
             },
-            'queryId': 'ojPdsZsimiJrUGLR1sjUtA',
+            'queryId': query_id,
         }
-        response = self.X_http('https://x.com/i/api/graphql/ojPdsZsimiJrUGLR1sjUtA/CreateRetweet', data=json_data)
+        response = self.X_http(f'https://x.com/i/api/graphql/{query_id}/CreateRetweet', data=json_data)
         return response
 
-    def quote_retweet(self, url, msg=''):
+
+    def quote_retweet(self, url, msg='', query_id='iQtK4dl5hBmXewYZuEOKVw'):
         json_data = {
             'variables': {
                 'tweet_text': msg,
@@ -284,13 +278,13 @@ class TwitterWrap:
                 'responsive_web_graphql_timeline_navigation_enabled': True,
                 'responsive_web_enhance_cards_enabled': False,
             },
-            'queryId': 'xT36w0XM3A8jDynpkram2A',
+            'queryId': query_id,
         }
-        response = self.X_http('https://x.com/i/api/graphql/xT36w0XM3A8jDynpkram2A/CreateTweet', data=json_data)
+        response = self.X_http(f'https://x.com/i/api/graphql/{query_id}/CreateTweet', data=json_data)
         return response
 
 
-    def reply_retweet(self, tweet_id, msg=''):
+    def reply_retweet(self, tweet_id, msg='', query_id='znq7jUAqRjmPj7IszLem5Q'):
         json_data = {
           "variables": {
             "tweet_text": msg,
@@ -330,45 +324,41 @@ class TwitterWrap:
             "responsive_web_graphql_timeline_navigation_enabled": True,
             "responsive_web_enhance_cards_enabled": False
           },
-          "queryId": "znq7jUAqRjmPj7IszLem5Q"
+          "queryId": query_id
         }
-        response = self.X_http('https://x.com/i/api/graphql/xT36w0XM3A8jDynpkram2A/CreateTweet', data=json_data)
+        response = self.X_http(f'https://x.com/i/api/graphql/{query_id}/CreateTweet', data=json_data)
         return response
 
-    def cancel_retweet(self, tweet_id):
+    def cancel_retweet(self, tweet_id, query_id='iQtK4dl5hBmXewYZuEOKVw'):
         json_data = {
             'variables': {
                 'source_tweet_id': tweet_id,
             },
-            'queryId': 'iQtK4dl5hBmXewYZuEOKVw',
+            'queryId': query_id,
         }
-        response = self.X_http('https://x.com/i/api/graphql/iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet', json=json_data)
+        response = self.X_http(f'https://x.com/i/api/graphql/{query_id}/DeleteRetweet', data=json_data)
         return response
 
 
+
+
+
 if __name__ == '__main__':
-    rand_string = "".join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=32))
-    cls = TwitterWrap('')
-    client_id = '',
-    state = 'profile',
-    code_challenge = rand_string
-    redirect_uri='https://www.baidu.com/get/userById'
-    scope = 'tweet.read%20offline.access%20tweet.write%20tweet.moderate.write%20users.read%20follows.read%20follows.write'
-    cls.twitter_authorizeV2(client_id, state, code_challenge, redirect_uri, scope)
-    #cls.create('loadingman5862')
-    #cls.destroy('loadingman5862')
+    cls = TwitterApi('d932440070f68e47d19b540f160884852225ddad', 'd1RSZW84R3A2TG1keUtMUDM3LXM6MTpjaQ')
+
+    #if cls.twitter_authorize():
+        #cls.create('loadingman5862')
+        #cls.destroy('loadingman5862')
 
 
-    cls.like('1855524233650254217')  # 点赞
-    cls.cancel_like('1855524233650254217')
+        #cls.like('1855524233650254217')  # 点赞
+        #cls.cancel_like('1855524233650254217')
+        #cls.cancel_retweet('1855524233650254217')
 
 
-    #cls.quote_retweet('https://x.com/loadingman5862/status/1855524233650254217', 'good job')
-    #cls.reply_retweet('1855524233650254217', 'good xxsjob')
-    #params = get_plume_x_params(plume_token)
-    #if cls.twitter_authorizeV2(**params):
-        # 执行操作
-       # cls.create('username')  # 关注用户
-      #  cls.like('1855524233650254217')  # 点赞
-       # cls.retweet('tweet_id')
+        #cls.quote_retweet('https://x.com/loadingman5862/status/1855524233650254217', 'good job')
+        #cls.reply_retweet('1855524233650254217', 'good done ')
+        #pass
+    print('finish............')
+
 
