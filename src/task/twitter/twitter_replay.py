@@ -73,11 +73,11 @@ def x_login(driver, user_name,account_name,pwd):
 
     sleep(3)
 
-def reply_msg(driver, self, url, msg):
+def reply_msg(driver, url, msg):
     for cookie in driver.get_cookies():
-        self.driver.add_cookie(cookie)
+        driver.add_cookie(cookie)
     driver.get(url)
-    wait = WebDriverWait(self.driver, 20)
+    wait = WebDriverWait(driver, 20)
     reply_xpath = '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/section/div/div/div[1]/div/div/div/div/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div/div/div/div/div/div[1]/div/div/div/div/div/div[2]/div/div/div/div/span'
 
     reply_span = wait.until(
@@ -90,7 +90,7 @@ def reply_msg(driver, self, url, msg):
     reply_btn = wait.until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'button[data-testid=tweetButtonInline]'))
     )
-    action = ActionChains(self.driver)
+    action = ActionChains(driver)
     action.move_to_element(reply_btn).click(reply_btn).perform()
     sleep(3)
     return driver
@@ -103,5 +103,5 @@ def close(driver):
 
 sel_driver = init_driver()
 x_login(sel_driver, array[0], array[1], array[2])
-reply_msg(sel_driver,'https://x.com/loadingman5862/status/1855524233650254217', 'hello 1111')
-close(sel_driver)
+#reply_msg(sel_driver,'https://x.com/loadingman5862/status/1855524233650254217', 'hello 1111')
+#close(sel_driver)

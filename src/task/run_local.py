@@ -45,12 +45,24 @@ def run_test_email(dir_name, file_name):
                             parallelism_num = parallelism_num)
 
 
+def run_twitter(dir_name, file_name):
+    template_txt = read_local_file(dir_name, file_name)
+    dir_path ='twitter'
+    accounts_exp_1 = 'x_1[:1]'
+    accounts_exp_2 = ''
+    parallelism_num = 1
+    TaskCoreLocal.local_run(template_txt, dir_path,accounts_exp_1= accounts_exp_1, accounts_exp_2 = accounts_exp_2,
+                            parallelism_num = parallelism_num)
+
+
 if __name__ == "__main__":
 
     #run_mailzero('bnb', 'mailzero.py')
     #run_test_email('bnb', 'email.py')
 
-    run_btc_fault('bnb', 'btc_token.py')
+    #run_btc_fault('bnb', 'btc_token.py')
+
+    run_twitter('twitter', 'twitter_replay.py')
 
 
     print("finish...................")
