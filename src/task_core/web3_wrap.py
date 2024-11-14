@@ -152,8 +152,8 @@ class Web3Wrap:
         return param
 
     def tx(self, from_account, tx_param):
-        signed = from_account.signTransaction(tx_param)
-        return self.w3.eth.send_raw_transaction(signed.rawTransaction.hex()).hex()
+        signed = from_account.sign_transaction(tx_param)
+        return self.w3.eth.send_raw_transaction(signed.raw_transaction.hex()).hex()
 
 
     def contract_instance(self, address, abi):

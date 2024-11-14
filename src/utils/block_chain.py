@@ -30,6 +30,7 @@ class Block_chain(Enum):
     OKB_X1 = ('https://testrpc.x1.tech', 195, 'pos')
 
     TAIKO_TEST = ('https://rpc.katla.taiko.xyz', 167008, 'pos')
+    Humanity = ('https://rpc.testnet.humanity.org', 1942999413, 'pos')
 
 
 

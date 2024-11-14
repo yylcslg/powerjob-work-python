@@ -1,6 +1,7 @@
 import random
 from concurrent.futures import ThreadPoolExecutor
 
+from src.utils.log import worker_log
 from src.utils.tools_utils import msg_decode, task_file_path, msg_encode
 from src.web.bean.instance_bean import InstanceBean, Instance_status
 
@@ -71,4 +72,5 @@ class TaskCoreInstance:
             exec(msg_decode(template_txt), exec_param)
         except Exception as e:
             instance_bean.failedTaskNum = instance_bean.failedTaskNum + 1
-            print('run_single error：',e)
+            log_msg = f"[{param_dict['batch_name']}][{exe_num}][{instance_bean.instanceId}]  {account_1} : error code: {e} "
+            worker_log.msg_info(log_msg, instance_bean.instanceId)

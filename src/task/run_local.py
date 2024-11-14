@@ -55,6 +55,28 @@ def run_twitter(dir_name, file_name):
                             parallelism_num = parallelism_num)
 
 
+def run_thp(dir_name, file_name):
+    template_txt = read_local_file(dir_name, file_name)
+    dir_path ='evm_wallet'
+    accounts_exp_1 = 'test[:]'
+    accounts_exp_2 = ''
+    parallelism_num = 1
+    TaskCoreLocal.local_run(template_txt, dir_path,accounts_exp_1= accounts_exp_1, accounts_exp_2 = accounts_exp_2,
+                            parallelism_num = parallelism_num)
+
+
+def run_humanity_reward(dir_name, file_name):
+    template_txt = read_local_file(dir_name, file_name)
+    dir_path ='evm_wallet'
+    #accounts_exp_1 = 'test[1:2]'
+    accounts_exp_1 = 'test[1:2];test[32:33]'
+    accounts_exp_2 = ''
+    parallelism_num = 1
+    TaskCoreLocal.local_run(template_txt, dir_path,accounts_exp_1= accounts_exp_1, accounts_exp_2 = accounts_exp_2,
+                            parallelism_num = parallelism_num)
+
+
+
 if __name__ == "__main__":
 
     #run_mailzero('bnb', 'mailzero.py')
@@ -62,7 +84,10 @@ if __name__ == "__main__":
 
     #run_btc_fault('bnb', 'btc_token.py')
 
-    run_twitter('twitter', 'twitter_replay.py')
+    #run_twitter('twitter', 'twitter_replay.py')
+
+    #run_thp('humanity', 'thp_faucet.py')
+    run_humanity_reward('humanity', 'reward_page.py')
 
 
     print("finish...................")
