@@ -32,7 +32,7 @@ def claim_thp_test(address):
     worker_log.msg_info(f"[{batch_name}][{exe_num}][{instanceId}]  {address} : [{clash.clash_url}]..start.", instanceId)
     nodes = clash.get_all_node()
 
-    if(exe_num > len(nodes)):
+    if(exe_num >= len(nodes)):
         worker_log.msg_info(f"[{batch_name}][{exe_num}][{instanceId}]  {address} : exe_num  > node size..............", instanceId)
         return
     else:

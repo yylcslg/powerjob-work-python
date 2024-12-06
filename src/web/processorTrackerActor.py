@@ -53,7 +53,7 @@ def task_process(bean:InstanceBean):
             param_dict['start_num'] = account_tuple[1]
             param_dict['batch_from'] = account_tuple[3]
 
-            bean.totalTaskNum = len(account_1_lst)
+            bean.totalTaskNum = bean.totalTaskNum + len(account_1_lst)
 
             TaskCoreInstance.instance_startup(template_txt, account_1_lst, account_2,
                                               parallelism_num=parallelism_num,

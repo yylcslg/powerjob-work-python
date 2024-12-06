@@ -47,16 +47,17 @@ class WorkReporter:
                         "workerAddress":workerAddress}
 
                 requests.post(url, json=json)
-                sleep(5)
+                sleep(3)
             except Exception as e:
                 print('reportHealth error...', e)
-                sleep(5)
+                sleep(3)
 
     def reportInstanceStatus(self):
         url = HTTP_PREFIX + self.server_address + '/server/reportInstanceStatus'
         while True:
             try:
                 for key in list(instanceCache.keys()):
+                    # 特殊处理，因为 会有 del 操作
                     if key in instanceCache:
                         bean:InstanceBean = instanceCache[key]
                         bean.reportTime = DateUtils.get_timestamp()
@@ -69,10 +70,10 @@ class WorkReporter:
                             del instanceCache[key]
                             del taskCache[key]
 
-                sleep(5)
+                sleep(3)
             except Exception as e:
                 print('reportHealth error...', e)
-                sleep(5)
+                sleep(3)
 
 
 
@@ -87,7 +88,7 @@ class WorkReporter:
             try:
                 gap = DateUtils.get_timestamp() - ts
                 if logQueue.queue.empty():
-                    if (gap > 10000 and len(log.instanceLogContents) >0):
+                    if (gap > 1000 and len(log.instanceLogContents) >0):
                         requests.post(url, json=json.loads(log.toJSON()))
                         log.instanceLogContents=[]
                         ts = DateUtils.get_timestamp()
@@ -98,7 +99,7 @@ class WorkReporter:
                     log.instanceLogContents.append(j)
 
                     num = num + 1
-                    if (gap > 10000 or num > 100):
+                    if (gap > 1000 or num > 100):
                         requests.post(url, json=json.loads(log.toJSON()))
                         log.instanceLogContents=[]
                         ts = DateUtils.get_timestamp()
