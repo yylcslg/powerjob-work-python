@@ -31,6 +31,12 @@ sudo systemctl start docker
 
 
 ```shell
+#get 镜像
+sudo docker pull java-app/xpds-xcore:latest
+
+
+ docker exec -it 3169fc4d7277 /bin/bash
+
 #删除 镜像
  sudo docker rmi -f powerjob_work_python:v1
 
@@ -67,6 +73,12 @@ sudo docker inspect [container_id]
 
 # 停止 容器的 always 设置
 sudo docker update --restart=no [container_id]
+
+
+redis安装说明-需要创建路径（/home/vimtech/tool/server/redis_5.0.14/data），配置好配置文件redis.conf，然后运行如下命令
+
+sudo docker run -p 6379:6379 --name redis5.0.14 -v /home/yinyunlong/person/program/docker/redis/config/redis.conf:/etc/redis/redis.conf  -v /home/yinyunlong/person/program/docker/redis/data:/data  -d --restart=always redis:5.0.14 --appendonly yes 
+
 
 ```
 
@@ -127,3 +139,5 @@ sudo docker volume prune
 ## 配置文件路径
 
 /home/config/
+
+
