@@ -9,6 +9,8 @@ services:
       - "/home/yinyunlong/person/program/mysql/conf:/etc/mysql/conf.d"
       - "/home/yinyunlong/person/program/mysql/logs:/logs"
       - "/home/yinyunlong/person/program/mysql/data:/var/lib/mysql"
+    networks:
+      - powerjobnet
     environment:
       - "MYSQL_ROOT_PASSWORD=root"
       - "MYSQL_DATABASE=powerjob-daily"
@@ -31,7 +33,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    network_mode: "host"
+    networks:
+      - powerjobnet
+#    links:
+#      - mysql_db:sql_db
     restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:7700/" ]
@@ -57,7 +62,10 @@ services:
       server_web:
         condition: service_healthy
     container_name: powerjob_work
-    network_mode: "host"
+    networks:
+      - powerjobnet
+#    links:
+#      - powerjob_server:power_server
     restart: always
     ports:
       - 27000:27000
@@ -66,3 +74,9 @@ services:
       - "/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/:/home/yinyunlong/person/python_workspace/powerjob-work-python/resource/"
       - "/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/:/home/yinyunlong/person/python_workspace/powerjob-work-python/src/task/"
     entrypoint: [ "python", "/home/powerjob-work-python/powerjob_worker.py" ]
+
+
+networks:
+    powerjobnet:
+        name: powerjobnet
+        driver: bridge

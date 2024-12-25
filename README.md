@@ -80,6 +80,9 @@ redis安装说明-需要创建路径（/home/vimtech/tool/server/redis_5.0.14/da
 sudo docker run -p 6379:6379 --name redis5.0.14 -v /home/yinyunlong/person/program/docker/redis/config/redis.conf:/etc/redis/redis.conf  -v /home/yinyunlong/person/program/docker/redis/data:/data  -d --restart=always redis:5.0.14 --appendonly yes 
 
 
+sudo docker run --net=host -p 6300:6300 --name redis5.0.14 -v /data/prov/data/docker/redis/config/redis.conf:/etc/redis/redis.conf  -v /data/prov/data/docker/redis/data:/data  -d --restart=always redis:5.0.14 --appendonly yes 
+
+
 ```
 
 
@@ -127,6 +130,7 @@ sudo docker-compose -f /home/yinyunlong/person/python_workspace/powerjob-work-py
 ## 清理所有停止运行的容器
 
 ```shell
+sudo docker rm container_id
 
 sudo docker container prune
 
